@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!--This is an auto generated document. Changes to this document may cause incorrect behavior.--><wap-provisioningdoc>
+  <characteristic type="ProfileInfo">
+    <parm name="created_wizard_version" value="4.0.6"/>
+  </characteristic>
+  <characteristic type="Profile">
+    <parm name="ProfileName" value="righthandkeymap"/>
+    <parm name="ModifiedDate" value="2016-02-24 17:32:27"/>
+    <parm name="TargetSystemVersion" value="5.0"/>
+    
+  <characteristic type="KeyMappingMgr" version="4.4">
+      <parm name="emdk_name" value=""/>
+      <parm name="Action" value="1"/>
+      <characteristic type="KeyMapping">
+        <parm name="KeyIdentifier" value="LEFT_TRIGGER_1"/>
+        <characteristic type="BaseTable">
+          <parm name="BaseBehavior" value="2"/>
+          <parm name="BaseKeyCode" value="102"/>
+        </characteristic>
+      </characteristic>
+    </characteristic>
+    <characteristic type="KeyMappingMgr" version="4.4">
+      <parm name="emdk_name" value=""/>
+      <parm name="Action" value="1"/>
+      <characteristic type="KeyMapping">
+        <parm name="KeyIdentifier" value="RIGHT_TRIGGER_1"/>
+        <characteristic type="BaseTable">
+          <parm name="BaseBehavior" value="2"/>
+          <parm name="BaseKeyCode" value="26"/>
+        </characteristic>
+      </characteristic>
+    </characteristic>
+  </characteristic>
+  <characteristic type="Profile">
+    <parm name="ProfileName" value="lefthandkeymap"/>
+    <parm name="ModifiedDate" value="2016-02-24 17:00:18"/>
+    <parm name="TargetSystemVersion" value="5.0"/>
+    <characteristic type="KeyMappingMgr" version="4.4">
+      <parm name="emdk_name" value=""/>
+      <parm name="Action" value="1"/>
+      <characteristic type="KeyMapping">
+        <parm name="KeyIdentifier" value="LEFT_TRIGGER_1"/>
+        <characteristic type="BaseTable">
+          <parm name="BaseBehavior" value="2"/>
+          <parm name="BaseKeyCode" value="26"/>
+        </characteristic>
+      </characteristic>
+    </characteristic>
+    <characteristic type="KeyMappingMgr" version="4.4">
+      <parm name="emdk_name" value=""/>
+      <parm name="Action" value="1"/>
+      <characteristic type="KeyMapping">
+        <parm name="KeyIdentifier" value="RIGHT_TRIGGER_1"/>
+        <characteristic type="BaseTable">
+          <parm name="BaseBehavior" value="2"/>
+          <parm name="BaseKeyCode" value="103"/>
+        </characteristic>
+      </characteristic>
+    </characteristic>
+  </characteristic>
+</wap-provisioningdoc>
