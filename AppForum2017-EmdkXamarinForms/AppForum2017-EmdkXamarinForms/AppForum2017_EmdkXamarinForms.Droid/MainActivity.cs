@@ -16,17 +16,16 @@ namespace AppForum2017_EmdkXamarinForms.Droid
 {
     [Activity(Label = "AppForum2017_EmdkXamarinForms", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, EMDKManager.IEMDKListener
+        
     {
-
         private EMDKManager emdkManager = null;
         private ProfileManager profileManager = null;
-        private const String profileName = "Profile1";
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
-            EMDKResults result = EMDKManager.GetEMDKManager(/*Application.Context*/ ApplicationContext, this);
+            EMDKResults result = EMDKManager.GetEMDKManager( ApplicationContext, this);
             if (result.StatusCode != EMDKResults.STATUS_CODE.Success)
             {
                 Toast.MakeText(this, "Error opening the EMDK Manager", ToastLength.Long).Show();
@@ -37,39 +36,34 @@ namespace AppForum2017_EmdkXamarinForms.Droid
             }
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
-
             LoadApplication(new App());
 
-            MessagingCenter.Subscribe<App, List<KeyValuePair<string, string>>>((App)Xamarin.Forms.Application.Current, "ProcessProfile", (sender, arg) => {
+            var emdk = DependencyService.Get<IDeviceConfig>();
+            emdk.setClockRequest += (cs, profileData) =>
+            {
                 string time = "";
                 string date = "";
-                string timeZone = "";
+                string time_zone = "";
 
-                foreach (KeyValuePair<string,string> parm in arg)
+                profileData.TryGetValue("time", out time);
+                profileData.TryGetValue("date", out date);
+                profileData.TryGetValue("time_zone", out time_zone);
+
+                String[] modifyData = new String[profileData.Count];
+                String profileName = "Profile1/Clock/Clock-1";
+
+                modifyData[0] = "Clock-1.TimeZone=" + time_zone;
+                modifyData[1] = "Clock-1.Date=" + date;
+                modifyData[2] = "Clock-1.Time=" + time;
+
+                if (profileManager != null)
                 {
-                    if (parm.Key.Equals("time"))
-                    {
-                        time = parm.Value;
-                    }
-
-                    if (parm.Key.Equals("date"))
-                    {
-                        date = parm.Value;
-                    }
-
-                    if (parm.Key.Equals("timeZone"))
-                    {
-                        timeZone = parm.Value;
-                    }
-
+                    EMDKResults results = profileManager.ProcessProfileAsync(profileName, ProfileManager.PROFILE_FLAG.Set, modifyData);
                 }
-
-                ProcessEMDKProfile(time, date, timeZone);
-            });
+            };
         }
 
         
-
         protected override void OnDestroy()
         {
             if (profileManager != null)
@@ -99,39 +93,22 @@ namespace AppForum2017_EmdkXamarinForms.Droid
         {
             this.emdkManager = emdkManager;
             profileManager = (ProfileManager)emdkManager.GetInstance(EMDKManager.FEATURE_TYPE.Profile);
-            
+            profileManager.Data += profileManager_Data;
+
         }
 
-
-        public void ProcessEMDKProfile(String time, String date, String timeZone)
+        void profileManager_Data(object sender, ProfileManager.DataEventArgs e)
         {
-
             String strStatus = "";
-            String[] modifyData = new String[1];
-
-            modifyData[0] =
-                "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-                        "<characteristic type=\"Profile\">" +
-                        "<parm name=\"ProfileName\" value=\"Profile1\"/>" +
-                        "<characteristic type=\"Clock\" version=\"0.2\">" +
-                        "<parm name=\"TimeZone\" value=\"" + timeZone + "\"/>" +
-                        "<parm name=\"Date\" value=\"" + date + "\"/>" +
-                        "<parm name=\"Time\" value=\"" + time + "\"/>" +
-                        "</characteristic>" +
-                        "</characteristic>";
-
-
-            EMDKResults results = profileManager.ProcessProfile(profileName, ProfileManager.PROFILE_FLAG.Set, modifyData);
+            // Call back with the result of the processProfileAsync
+            EMDKResults results = e.P0.Result;
 
             if (results.StatusCode == EMDKResults.STATUS_CODE.Success)
             {
-                System.Diagnostics.Debug.WriteLine("Success!");
-
                 strStatus = "Profile processed succesfully";
             }
             else if (results.StatusCode == EMDKResults.STATUS_CODE.CheckXml)
             {
-                System.Diagnostics.Debug.WriteLine("Checking XML");
                 //Inspect the XML response to see if there are any errors, if not report success
                 using (XmlReader reader = XmlReader.Create(new StringReader(results.StatusString)))
                 {
@@ -158,16 +135,17 @@ namespace AppForum2017_EmdkXamarinForms.Droid
                         }
                     }
 
-                    if (checkXmlStatus == "\n\n"){ strStatus = "Profile applied successfully ..."; }
+                    if (checkXmlStatus == "\n\n") { strStatus = "Profile applied successfully ..."; }
                     else
                     { strStatus = checkXmlStatus; }
                 }
             }
-            else{ strStatus = "Something wrong on processing the profile"; }
+            else { strStatus = "Something wrong on processing the profile"; }
 
-            MessagingCenter.Send<App, string>((App)Xamarin.Forms.Application.Current, "Status", strStatus);
-
+            RunOnUiThread(() => MessagingCenter.Send<App, string>((App)Xamarin.Forms.Application.Current, "Status", strStatus));
         }
+
+
 
 
     }

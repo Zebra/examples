@@ -85,13 +85,13 @@ namespace AppForum2017_EmdkXamarinForms
 
         void OnSubmit(object sender, System.EventArgs e)
         {
-            var list = new List<KeyValuePair<string, string>>() {
-                new KeyValuePair<string, string>("time", txtTime.Text),
-                new KeyValuePair<string, string>("date", txtDate.Text),
-                new KeyValuePair<string, string>("timezone", txtTimeZone.Text)
-                };
-        
-            MessagingCenter.Send<App, List<KeyValuePair<string, string>>>((App)Xamarin.Forms.Application.Current, "ProcessProfile",list);
+            statusLabel.Text = "";
+            var deviceConfig = DependencyService.Get<IDeviceConfig>();
+            if (deviceConfig != null)
+            {
+                deviceConfig.SetClock(txtTime.Text, txtDate.Text, txtTimeZone.Text);
+            }
+
         }
     }
 }
